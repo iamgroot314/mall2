@@ -1,0 +1,44 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /shop
+    multipart:
+      max-file-size: 10MB  #单个文件
+      max-request-size: 100MB #总文件大小
+
+#   123.56.156.80
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+    url: jdbc:mysql://172.25.35.120:3306/mall?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf8
+    username: admin
+    password: hyh187
+  jpa:
+    show-sql: true
+  mvc:
+    view:
+      prefix: /WEB-INF/views/
+      suffix: .jsp
+
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.sk.mall2.entity
+
+#devtools插件
+devtools:
+  restart:
+    enabled: true #是否支持热部署
+
+#mybaatis分页插件pagehelper设置
+pagehelper:
+  pagehelperDialect: mysql
+  reasonable: true
+  support-methods-arguments: true
+
+# 打印sql
+logging:
+  level:
+    com.sk.mall2.dao: DEBUG
+

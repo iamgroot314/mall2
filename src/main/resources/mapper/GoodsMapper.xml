@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sk.mall2.dao.GoodsMapper">
+    <resultMap id="BaseResultMap" type="com.sk.mall2.entity.Goods">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="goodsName" jdbcType="VARCHAR" property="goodsName"/>
+        <result column="price" jdbcType="INTEGER" property="price"/>
+        <result column="num" jdbcType="INTEGER" property="num"/>
+        <result column="upTime" jdbcType="TIMESTAMP" property="upTime"/>
+        <result column="category" jdbcType="INTEGER" property="category"/>
+        <result column="categoryName" jdbcType="VARCHAR" property="categoryName"/>
+        <result column="detailCate" jdbcType="VARCHAR" property="detailCate"/>
+        <result column="isSale" jdbcType="INTEGER" property="isSale"/>
+        <association property="activity" select="com.sk.mall2.dao.ActivityMapper.getActivityById"
+                     javaType="com.sk.mall2.entity.Activity" column="activityId"/>
+        <association property="hotGoods" javaType="com.sk.mall2.entity.HotGoods" column="goodsId">
+            <id column="goodsId" jdbcType="INTEGER" property="goodsId"/>
+            <result column="countNum" jdbcType="INTEGER" property="countNum"/>
+        </association>
+    </resultMap>
+
+    <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.sk.mall2.entity.Goods">
+        <result column="description" jdbcType="LONGVARCHAR" property="description"/>
+    </resultMap>
+
+    <resultMap extends="ResultMapWithBLOBs" id="ResultMapIncludeImage" type="com.sk.mall2.entity.Goods">
+        <collection property="imagePaths" javaType="ArrayList" ofType="com.sk.mall2.entity.ImagePath"
+                    select="com.sk.mall2.dao.ImagePathMapper.getImagesByGoodsId" column="id"/>
+    </resultMap>
+
+<!--    <resultMap extends="ResultMapIncludeImage" id="ResultMapIncludeComment" type="com.sk.mall2.entity.Goods">-->
+<!--        <collection property="comments" javaType="ArrayList" ofType="com.sk.mall2.entity.Comment"-->
+<!--                    select="com.sk.mall2.dao.CommentMapper.getByGoodsId" column="id"/>-->
+<!--    </resultMap>-->
+
+    <select id="selectFavByUserId" resultMap="ResultMapIncludeImage">
+        select g.*
+        from goods g,
+             collection c
+        where g.id = c.goodsId
+          and c.userId = #{userId}
+          and isSale = 1
+    </select>
+
+    <select id="getById" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select g.*
+        from goods g
+        where g.id = #{id}
+    </select>
+
+    <select id="getBySearchName" resultMap="ResultMapIncludeImage">
+        select *
+        from goods
+        where goodsName like #{keyword}
+          and isSale = '1'
+    </select>
+
+    <select id="getAllGoods" resultMap="BaseResultMap">
+        select *
+        from goods
+        order by upTime
+    </select>
+
+    <select id="selectGoodsByCateLike" resultMap="ResultMapIncludeImage">
+        select *
+        from goods
+        where category in (select id from category where cateName like #{cate})
+          and isSale = '1'
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete
+        from goods
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+    <insert id="insertSelective" parameterType="com.sk.mall2.entity.Goods" useGeneratedKeys="true" keyProperty="id">
+        insert into goods
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="goodsName != null">
+                goodsName,
+            </if>
+            <if test="price != null">
+                price,
+            </if>
+            <if test="num != null">
+                num,
+            </if>
+            <if test="upTime != null">
+                upTime,
+            </if>
+            <if test="category != null">
+                category,
+            </if>
+            <if test="categoryName != null">
+                categoryName,
+            </if>
+            <if test="detailCate != null">
+                detailCate,
+            </if>
+            <if test="activityId != null">
+                activityId,
+            </if>
+            <if test="description != null">
+                description,
+            </if>
+            <if test="isSale != null">
+                isSale,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="goodsName != null">
+                #{goodsName,jdbcType=VARCHAR},
+            </if>
+            <if test="price != null">
+                #{price,jdbcType=INTEGER},
+            </if>
+            <if test="num != null">
+                #{num,jdbcType=INTEGER},
+            </if>
+            <if test="upTime != null">
+                #{upTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="category != null">
+                #{category,jdbcType=INTEGER},
+            </if>
+            <if test="categoryName != null">
+                #{categoryName,jdbcType=INTEGER},
+            </if>
+            <if test="detailCate != null">
+                #{detailCate,jdbcType=VARCHAR},
+            </if>
+            <if test="activityId != null">
+                #{activityId,jdbcType=INTEGER},
+            </if>
+            <if test="description != null">
+                #{description,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="isSale != null">
+                #{isSale,jdbcType=LONGVARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.sk.mall2.entity.Goods">
+        update goods
+        <set>
+            <if test="goodsName != null">
+                goodsName = #{goodsName,jdbcType=VARCHAR},
+            </if>
+            <if test="price != null">
+                price = #{price,jdbcType=INTEGER},
+            </if>
+            <if test="num != null">
+                num = #{num,jdbcType=INTEGER},
+            </if>
+            <if test="upTime != null">
+                upTime = #{upTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="category != null">
+                category = #{category,jdbcType=INTEGER},
+            </if>
+            <if test="categoryName != null">
+                categoryName = #{categoryName,jdbcType=VARCHAR},
+            </if>
+            <if test="detailCate != null">
+                detailCate = #{detailCate,jdbcType=VARCHAR},
+            </if>
+            <if test="activityId != null">
+                activityId = #{activityId,jdbcType=INTEGER},
+            </if>
+            <if test="description != null">
+                description = #{description,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="isSale != null">
+                isSale = #{isSale,jdbcType=LONGVARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <select id="getHotGoods" resultMap="BaseResultMap">
+        select *
+        from goods
+        where id in (select goodsId from hotgoods) and isSale = '1'
+    </select>
+
+</mapper>

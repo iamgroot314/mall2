@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sk.mall2.dao.ImagePathMapper">
+    <resultMap id="BaseResultMap" type="com.sk.mall2.entity.ImagePath">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="goodId" jdbcType="INTEGER" property="goodId"/>
+        <result column="path" jdbcType="VARCHAR" property="path"/>
+    </resultMap>
+
+    <select id="getImagesByGoodsId" resultMap="BaseResultMap">
+        select id, goodId, path
+        from imagepath
+        where goodId = ${id}
+        order by goodId
+    </select>
+
+
+    <insert id="addImagePath" parameterType="com.sk.mall2.entity.ImagePath">
+        insert into imagepath
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="goodId != null">
+                goodId,
+            </if>
+            <if test="path != null">
+                path,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="goodId != null">
+                #{goodId,jdbcType=INTEGER},
+            </if>
+            <if test="path != null">
+                #{path,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+
+</mapper>
